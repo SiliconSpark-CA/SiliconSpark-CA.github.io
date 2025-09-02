@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple multiplication games</title>
+    <meta name="description" content="AI created single HTML multiplication games">
+    
+    <!-- Tailwind CSS -->
+    <link rel="stylesheet" href="/assets/css/tailwind.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    
+    <!-- Dark mode support -->
+    <script>
+        // Set dark mode based on system preference only (no toggle)
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen flex flex-col">
+    <div class="bg-white dark:bg-gray-800 shadow-sm">
+        <div class="container mx-auto px-2 py-2">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                <nav class="flex flex-col md:flex-row mt-4 md:mt-0">
+                    <a href="/" class="py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Home</a>
+                    <span class="hidden md:block mx-2 text-gray-300 dark:text-gray-600">|</span>
+                    <a href="/ai-demos/" class="py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">AI Demos</a>
+                    <span class="hidden md:block mx-2 text-gray-300 dark:text-gray-600">|</span>
+                    <a href="/it-centre/" class="py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">IT Centre</a>
+                    <span class="hidden md:block mx-2 text-gray-300 dark:text-gray-600">|</span>
+                    <a href="/blog/" class="py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Blog</a>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <main class="flex-grow container mx-auto px-4 mt-10 mb-10">
+        
+<article class="max-w-3xl mx-auto mt-12">
+    <header class="mb-8">
+        <div class="flex justify-between items-center mb-4">
+            <span class="tag 
+                tag-blog
+                ">
+                Blog Post
+                
+            </span>
+            <time class="text-gray-500 dark:text-gray-400">August 31, 2025</time>
+        </div>
+        <h1 class="text-3xl md:text-4xl font-bold mb-4">Simple multiplication games</h1>
+        
+        <p class="text-xl text-gray-600 dark:text-gray-300">AI created single HTML multiplication games</p>
+        
+    </header>
+    
+    <div class="prose prose-lg max-w-none dark:prose-invert">
+        <hr>
+<p>Try out Z's single HTML web app to teach multiplication <a href="/ai-demos/demos/Math-Multiplication-z-v2.html">here</a></p>
+<p>Try out Qwen's single HTML web app to teach multiplication <a href="/ai-demos/demos/Math-Multiplication-qwen-v1.html">here</a></p>
+<hr>
+<p>These are simple mulitplication games created by AI.</p>
+<p>For the most part, I started off by asking the AI to think about innovative ways to teach 5 to 10 year old multiplication.</p>
+<p>Then I followed up by asking the AI to pick one of it's suggestions, ideally a simplier one, and then create a single page HTML web app.</p>
+<p>Z took 2 passes to get it functionally working - I forgot what and I'm too lazy to look in the logs just right now to see what was wrong.</p>
+<p>Qwen (specifically Qwen3-Coder) got a working app on it's first try.</p>
+
+    </div>
+    
+    <footer class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
+        <div class="flex justify-between items-center">
+            <a href="/" class="text-blue-600 dark:text-blue-400 hover:underline">&larr; Back to Home</a>
+        </div>
+    </footer>
+</article>
+    </main>
+
+    <footer class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+        <div class="container mx-auto px-2 py-2">
+            <div class="text-center text-gray-600 dark:text-gray-400">
+                <p>&copy; 2025 SiliconSpark. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

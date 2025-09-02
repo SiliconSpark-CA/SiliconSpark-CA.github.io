@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hopscotch Multiplication Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Comic Sans MS', cursive;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: #2d3436;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            margin-bottom: 10px;
+        }
+        
+        .instructions {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 15px;
+            max-width: 600px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            font-size: 1.1rem;
+        }
+        
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 800px;
+        }
+        
+        .hopscotch-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(3, auto);
+            gap: 15px;
+            width: 100%;
+            margin-bottom: 30px;
+        }
+        
+        .hopscotch-square {
+            aspect-ratio: 1;
+            background: white;
+            border: 4px solid #fdcb6e;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hopscotch-square:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+        
+        .hopscotch-square.active {
+            background: #ffeaa7;
+            border-color: #e17055;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .hopscotch-square.completed {
+            background: #55efc4;
+            border-color: #00b894;
+            color: white;
+        }
+        
+        .hopscotch-square .problem {
+            font-size: 1.4rem;
+            margin-bottom: 5px;
+        }
+        
+        .hopscotch-square .answer {
+            font-size: 2rem;
+            color: #e17055;
+            min-height: 2.5rem;
+        }
+        
+        .hopscotch-square .hop-icon {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            font-size: 1.5rem;
+        }
+        
+        .controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .input-section {
+            display: flex;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        
+        #answer-input {
+            flex: 1;
+            padding: 15px;
+            font-size: 1.5rem;
+            border: 3px solid #fdcb6e;
+            border-radius: 10px 0 0 10px;
+            outline: none;
+        }
+        
+        #submit-btn {
+            padding: 15px 25px;
+            font-size: 1.5rem;
+            background: #e17055;
+            color: white;
+            border: none;
+            border-radius: 0 10px 10px 0;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        #submit-btn:hover {
+            background: #d63031;
+        }
+        
+        .feedback {
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .feedback.correct {
+            color: #00b894;
+        }
+        
+        .feedback.incorrect {
+            color: #d63031;
+        }
+        
+        .game-controls {
+            display: flex;
+            gap: 15px;
+        }
+        
+        button {
+            padding: 12px 25px;
+            font-size: 1.2rem;
+            background: #6c5ce7;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #5f3dc4;
+        }
+        
+        .progress {
+            width: 100%;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: #55efc4;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        @media (max-width: 600px) {
+            .hopscotch-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .instructions {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🦘 Hopscotch Multiplication 🦘</h1>
+    </header>
+    
+    <div class="instructions">
+        <p>Solve multiplication problems to hop through the grid! Start at the first square, solve the problem, then hop to the next. Complete all squares to win!</p>
+    </div>
+    
+    <div class="game-container">
+        <div class="progress">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        
+        <div class="hopscotch-grid" id="hopscotch-grid">
+            <!-- Squares will be generated by JavaScript -->
+        </div>
+        
+        <div class="controls">
+            <div class="input-section">
+                <input type="number" id="answer-input" placeholder="Your answer" autofocus>
+                <button id="submit-btn">Hop!</button>
+            </div>
+            
+            <div class="feedback" id="feedback"></div>
+            
+            <div class="game-controls">
+                <button id="reset-btn">Reset Game</button>
+                <button id="new-game-btn">New Problems</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Game elements
+            const hopscotchGrid = document.getElementById('hopscotch-grid');
+            const answerInput = document.getElementById('answer-input');
+            const submitBtn = document.getElementById('submit-btn');
+            const feedback = document.getElementById('feedback');
+            const resetBtn = document.getElementById('reset-btn');
+            const newGameBtn = document.getElementById('new-game-btn');
+            const progressBar = document.getElementById('progress-bar');
+            
+            // Game state
+            let problems = [];
+            let currentSquare = 0;
+            let completedSquares = 0;
+            
+            // Multiplication problems for different levels
+            const problemSets = {
+                easy: [
+                    { problem: "2 × 3", answer: 6 },
+                    { problem: "5 × 2", answer: 10 },
+                    { problem: "3 × 4", answer: 12 },
+                    { problem: "2 × 7", answer: 14 },
+                    { problem: "5 × 5", answer: 25 },
+                    { problem: "10 × 3", answer: 30 },
+                    { problem: "4 × 4", answer: 16 },
+                    { problem: "2 × 9", answer: 18 },
+                    { problem: "5 × 8", answer: 40 },
+                    { problem: "10 × 6", answer: 60 }
+                ],
+                medium: [
+                    { problem: "3 × 7", answer: 21 },
+                    { problem: "6 × 4", answer: 24 },
+                    { problem: "7 × 8", answer: 56 },
+                    { problem: "9 × 3", answer: 27 },
+                    { problem: "4 × 9", answer: 36 },
+                    { problem: "6 × 7", answer: 42 },
+                    { problem: "8 × 8", answer: 64 },
+                    { problem: "9 × 6", answer: 54 },
+                    { problem: "7 × 7", answer: 49 },
+                    { problem: "9 × 9", answer: 81 }
+                ],
+                hard: [
+                    { problem: "7 × 12", answer: 84 },
+                    { problem: "9 × 11", answer: 99 },
+                    { problem: "8 × 13", answer: 104 },
+                    { problem: "6 × 15", answer: 90 },
+                    { problem: "12 × 12", answer: 144 },
+                    { problem: "9 × 14", answer: 126 },
+                    { problem: "11 × 11", answer: 121 },
+                    { problem: "7 × 16", answer: 112 },
+                    { problem: "13 × 8", answer: 104 },
+                    { problem: "15 × 9", answer: 135 }
+                ]
+            };
+            
+            // Initialize the game
+            function initGame() {
+                // Choose a random problem set
+                const sets = Object.keys(problemSets);
+                const randomSet = sets[Math.floor(Math.random() * sets.length)];
+                problems = [...problemSets[randomSet]];
+                
+                // Shuffle problems
+                problems.sort(() => Math.random() - 0.5);
+                
+                // Reset game state
+                currentSquare = 0;
+                completedSquares = 0;
+                progressBar.style.width = '0%';
+                feedback.textContent = '';
+                feedback.className = 'feedback';
+                
+                // Generate hopscotch grid
+                hopscotchGrid.innerHTML = '';
+                problems.forEach((problem, index) => {
+                    const square = document.createElement('div');
+                    square.className = 'hopscotch-square';
+                    square.id = `square-${index}`;
+                    
+                    // Add hop icon to every other square
+                    if (index % 2 === 1) {
+                        square.innerHTML = `<span class="hop-icon">🦘</span>`;
+                    }
+                    
+                    // Initially show the problem and a question mark for the answer
+                    square.innerHTML += `
+                        <div class="problem">${problem.problem}</div>
+                        <div class="answer">?</div>
+                    `;
+                    
+                    hopscotchGrid.appendChild(square);
+                });
+                
+                // Set first square as active
+                if (problems.length > 0) {
+                    document.getElementById(`square-0`).classList.add('active');
+                }
+            }
+            
+            // Check the answer
+            function checkAnswer() {
+                const userAnswer = parseInt(answerInput.value);
+                
+                if (isNaN(userAnswer)) {
+                    showFeedback('Please enter a number!', 'incorrect');
+                    return;
+                }
+                
+                const currentProblem = problems[currentSquare];
+                
+                if (userAnswer === currentProblem.answer) {
+                    // Correct answer
+                    const currentSquareElement = document.getElementById(`square-${currentSquare}`);
+                    currentSquareElement.classList.remove('active');
+                    currentSquareElement.classList.add('completed');
+                    
+                    // Reveal the correct answer in the square
+                    const answerDiv = currentSquareElement.querySelector('.answer');
+                    answerDiv.textContent = currentProblem.answer;
+                    
+                    completedSquares++;
+                    updateProgress();
+                    
+                    showFeedback('Correct! Great job! 🎉', 'correct');
+                    
+                    // Move to next square
+                    currentSquare++;
+                    
+                    if (currentSquare < problems.length) {
+                        document.getElementById(`square-${currentSquare}`).classList.add('active');
+                    } else {
+                        // Game completed
+                        showFeedback('You completed the hopscotch! 🏆', 'correct');
+                        setTimeout(() => {
+                            if (confirm('Congratulations! You won! Play again?')) {
+                                initGame();
+                            }
+                        }, 1500);
+                    }
+                } else {
+                    // Incorrect answer
+                    showFeedback('Try again! 🤔', 'incorrect');
+                }
+                
+                // Clear input
+                answerInput.value = '';
+                answerInput.focus();
+            }
+            
+            // Show feedback message
+            function showFeedback(message, type) {
+                feedback.textContent = message;
+                feedback.className = `feedback ${type}`;
+                
+                // Clear feedback after 2 seconds
+                setTimeout(() => {
+                    feedback.textContent = '';
+                    feedback.className = 'feedback';
+                }, 2000);
+            }
+            
+            // Update progress bar
+            function updateProgress() {
+                const progress = (completedSquares / problems.length) * 100;
+                progressBar.style.width = `${progress}%`;
+            }
+            
+            // Event listeners
+            submitBtn.addEventListener('click', checkAnswer);
+            answerInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    checkAnswer();
+                }
+            });
+            
+            resetBtn.addEventListener('click', () => {
+                if (confirm('Are you sure you want to reset the current game?')) {
+                    initGame();
+                }
+            });
+            
+            newGameBtn.addEventListener('click', () => {
+                if (confirm('Start a new game with different problems?')) {
+                    initGame();
+                }
+            });
+            
+            // Initialize the game on load
+            initGame();
+        });
+    </script>
+</body>
+</html>

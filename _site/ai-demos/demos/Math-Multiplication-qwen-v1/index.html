@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Multiplication Bingo</title>
+  <style>
+    body {
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      text-align: center;
+      background-color: #f0f9ff;
+      color: #333;
+      padding: 20px;
+    }
+    h1 {
+      color: #005b96;
+    }
+    .game-container {
+      max-width: 500px;
+      margin: 20px auto;
+    }
+    .bingo-card {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin: 20px auto;
+      width: 90%;
+    }
+    .cell {
+      border: 2px solid #0077cc;
+      padding: 15px;
+      font-size: 1.4em;
+      font-weight: bold;
+      background: white;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .cell:hover {
+      background: #cce5ff;
+    }
+    .cell.selected {
+      background: #4CAF50;
+      color: white;
+    }
+    button {
+      font-size: 1.2em;
+      padding: 12px 20px;
+      margin: 10px;
+      background: #005b96;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #003f6b;
+    }
+    #called-number {
+      font-size: 2em;
+      font-weight: bold;
+      color: #d44;
+      margin: 15px 0;
+    }
+    .message {
+      font-size: 1.5em;
+      color: #d44;
+      font-weight: bold;
+      height: 30px;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <h1>🎯 Multiplication Bingo!</h1>
+    <p>Click problems that match the called product.</p>
+
+    <div id="called-number">❓</div>
+    <button id="call-btn">Call a Number</button>
+
+    <div class="message" id="message"></div>
+
+    <div class="bingo-card" id="bingo-card"></div>
+
+    <button id="reset-btn">New Game</button>
+  </div>
+
+  <script>
+    // Multiplication facts: problems and their answers (products)
+    const multiplicationFacts = [];
+    for (let i = 1; i <= 10; i++) {
+      for (let j = 1; j <= 10; j++) {
+        multiplicationFacts.push({ problem: `${i} × ${j}`, product: i * j });
+      }
+    }
+
+    // DOM Elements
+    const bingoCardEl = document.getElementById("bingo-card");
+    const callBtn = document.getElementById("call-btn");
+    const calledNumberEl = document.getElementById("called-number");
+    const messageEl = document.getElementById("message");
+    const resetBtn = document.getElementById("reset-btn");
+
+    let selectedNumbers = new Set();
+    let cardProblems = [];
+    let cardCells = [];
+    let cardProducts = []; // Store the products of the current card
+
+    // Generate a random 3x3 bingo card
+    function generateBingoCard() {
+      bingoCardEl.innerHTML = "";
+      messageEl.textContent = "";
+      calledNumberEl.textContent = "❓";
+
+      // Pick 9 random problems (no duplicates)
+      const shuffled = [...multiplicationFacts].sort(() => 0.5 - Math.random());
+      cardProblems = shuffled.slice(0, 9);
+      cardProducts = cardProblems.map(fact => fact.product); // Store products for calling
+      selectedNumbers = new Set();
+
+      cardCells = [];
+      cardProblems.forEach((fact, index) => {
+        const cell = document.createElement("div");
+        cell.className = "cell";
+        cell.textContent = fact.problem;
+        cell.dataset.index = index;
+        cell.addEventListener("click", () => selectCell(cell, fact.product));
+        bingoCardEl.appendChild(cell);
+        cardCells.push(cell);
+      });
+    }
+
+    // Handle calling a random product from the current card
+    function callNumber() {
+      if (cardProducts.length === 0) return;
+      
+      const randomProduct = cardProducts[Math.floor(Math.random() * cardProducts.length)];
+      calledNumberEl.textContent = randomProduct;
+      messageEl.textContent = "";
+    }
+
+    // Select a cell if it matches the called number
+    function selectCell(cell, product) {
+      const calledNum = parseInt(calledNumberEl.textContent);
+      if (isNaN(calledNum)) {
+        messageEl.textContent = "Call a number first!";
+        return;
+      }
+
+      if (product === calledNum) {
+        cell.classList.add("selected");
+        selectedNumbers.add(cell.dataset.index);
+        checkBingo();
+      } else {
+        messageEl.textContent = "Not a match! Try again.";
+        setTimeout(() => (messageEl.textContent = ""), 1500);
+      }
+    }
+
+    // Check for Bingo: 3 in a row (rows, columns, diagonals)
+    function checkBingo() {
+      const lines = [
+        [0, 1, 2], // top row
+        [3, 4, 5], // middle row
+        [6, 7, 8], // bottom row
+        [0, 3, 6], // left col
+        [1, 4, 7], // middle col
+        [2, 5, 8], // right col
+        [0, 4, 8], // diagonal \
+        [2, 4, 6], // diagonal /
+      ];
+
+      for (const line of lines) {
+        if (line.every(index => selectedNumbers.has(index.toString()))) {
+          messageEl.textContent = "🎉 BINGO! 🎉";
+          calledNumberEl.textContent = "✅";
+          return;
+        }
+      }
+    }
+
+    // Event Listeners
+    callBtn.addEventListener("click", callNumber);
+    resetBtn.addEventListener("click", generateBingoCard);
+
+    // Initialize game
+    generateBingoCard();
+  </script>
+</body>
+</html>
