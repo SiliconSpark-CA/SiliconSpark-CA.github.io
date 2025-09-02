@@ -1,0 +1,250 @@
+<h1>High-Level Software Requirements Specification (SRS)</h1>
+<p><strong>Project:</strong> Online Camping Spot Reservation Application<br>
+<strong>Audience:</strong> AI Programming Agents</p>
+<hr>
+<h2>1. Introduction</h2>
+<h3>1.1 Purpose</h3>
+<p>Enable users to discover, reserve, and manage camping spots online through a simple, intuitive interface.</p>
+<h3>1.2 Scope</h3>
+<ul>
+<li>Web-based reservation system for camping spots</li>
+<li>User-facing portal and administrative management</li>
+<li>Integration with payment gateways and notification systems</li>
+</ul>
+<hr>
+<h2>2. Overall Description</h2>
+<h3>2.1 User Roles</h3>
+<ul>
+<li><strong>Campers</strong>: Browse, book, and manage reservations</li>
+<li><strong>Administrators</strong>: Manage spots, users, and system settings</li>
+</ul>
+<h3>2.2 Core Workflow</h3>
+<ol>
+<li>User searches for camping spots</li>
+<li>Selects spot and dates</li>
+<li>Completes booking and payment</li>
+<li>Receives confirmation and manages reservation</li>
+</ol>
+<hr>
+<h2>3. Functional Requirements</h2>
+<h3>3.1 Essential Features (Must-Have)</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Requirement</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>F1</td>
+<td>User Accounts</td>
+<td>Registration, login, password recovery</td>
+</tr>
+<tr>
+<td>F2</td>
+<td>Spot Listings</td>
+<td>Display spot details: location, capacity, price, photos</td>
+</tr>
+<tr>
+<td>F3</td>
+<td>Search &amp; Filter</td>
+<td>Search by location; filter by dates/price</td>
+</tr>
+<tr>
+<td>F4</td>
+<td>Availability Calendar</td>
+<td>Visual calendar showing available/unavailable dates</td>
+</tr>
+<tr>
+<td>F5</td>
+<td>Booking System</td>
+<td>Select dates, confirm pricing, generate confirmation</td>
+</tr>
+<tr>
+<td>F6</td>
+<td>Payment Processing</td>
+<td>Secure payment via integrated gateway</td>
+</tr>
+<tr>
+<td>F7</td>
+<td>User Dashboard</td>
+<td>View upcoming/past reservations and details</td>
+</tr>
+<tr>
+<td>F8</td>
+<td>Cancellation</td>
+<td>Cancel bookings with automated confirmation</td>
+</tr>
+<tr>
+<td>F9</td>
+<td>Notifications</td>
+<td>Email confirmations, reminders, and cancellation alerts</td>
+</tr>
+</tbody>
+</table>
+<h3>3.2 Optional Features (Enhancements)</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Requirement</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>F10</td>
+<td>Reviews &amp; Ratings</td>
+<td>Users rate spots and upload photos post-stay</td>
+</tr>
+<tr>
+<td>F11</td>
+<td>Interactive Maps</td>
+<td>Show spot locations and nearby points of interest</td>
+</tr>
+<tr>
+<td>F12</td>
+<td>Weather Integration</td>
+<td>Display forecasts and packing suggestions</td>
+</tr>
+<tr>
+<td>F13</td>
+<td>Mobile Responsiveness</td>
+<td>Full functionality on mobile devices</td>
+</tr>
+<tr>
+<td>F14</td>
+<td>Advanced Filters</td>
+<td>Filter by amenities (electricity, pet-friendly, etc.)</td>
+</tr>
+<tr>
+<td>F15</td>
+<td>Recommendations</td>
+<td>Suggest spots based on user history</td>
+</tr>
+<tr>
+<td>F16</td>
+<td>Social Sharing</td>
+<td>Share trips on social media or invite friends</td>
+</tr>
+<tr>
+<td>F17</td>
+<td>Loyalty Program</td>
+<td>Reward points for frequent bookings</td>
+</tr>
+<tr>
+<td>F18</td>
+<td>Emergency Info</td>
+<td>Provide emergency contacts and nearby services</td>
+</tr>
+<tr>
+<td>F19</td>
+<td>Activity Suggestions</td>
+<td>Recommend local activities (hiking, fishing, etc.)</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>4. Non-Functional Requirements</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Requirement</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NF1</td>
+<td>Performance</td>
+<td>Pages load in &lt;3 seconds; handle 100+ concurrent users</td>
+</tr>
+<tr>
+<td>NF2</td>
+<td>Security</td>
+<td>Encrypt sensitive data; secure payment processing</td>
+</tr>
+<tr>
+<td>NF3</td>
+<td>Reliability</td>
+<td>99.9% uptime; automated backups</td>
+</tr>
+<tr>
+<td>NF4</td>
+<td>Usability</td>
+<td>Intuitive interface requiring &lt;1 min for key tasks</td>
+</tr>
+<tr>
+<td>NF5</td>
+<td>Scalability</td>
+<td>Support 10x user growth without redesign</td>
+</tr>
+<tr>
+<td>NF6</td>
+<td>Accessibility</td>
+<td>WCAG 2.1 AA compliance for users with disabilities</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>5. External Interface Requirements</h2>
+<h3>5.1 User Interfaces</h3>
+<ul>
+<li>Web browser (desktop/mobile)</li>
+<li>Responsive design for all screen sizes</li>
+</ul>
+<h3>5.2 Software Interfaces</h3>
+<ul>
+<li>Payment gateway API (e.g., Stripe, PayPal)</li>
+<li>Email service provider (e.g., SendGrid)</li>
+<li>Weather data API (for optional feature F12)</li>
+</ul>
+<h3>5.3 Hardware Interfaces</h3>
+<ul>
+<li>None (cloud-hosted solution)</li>
+</ul>
+<hr>
+<h2>6. Data Requirements</h2>
+<h3>6.1 User Data</h3>
+<ul>
+<li>Name, contact info, payment details (encrypted)</li>
+<li>Reservation history</li>
+</ul>
+<h3>6.2 Camping Spot Data</h3>
+<ul>
+<li>Location, capacity, pricing, amenities</li>
+<li>Availability calendar</li>
+<li>Photos and descriptions</li>
+</ul>
+<h3>6.3 Transaction Data</h3>
+<ul>
+<li>Booking records</li>
+<li>Payment history</li>
+</ul>
+<hr>
+<h2>7. Constraints</h2>
+<ul>
+<li>Must comply with data protection regulations (GDPR, CCPA)</li>
+<li>Initial launch within 6 months</li>
+<li>Budget: &lt;$50,000 for MVP</li>
+</ul>
+<hr>
+<h2>8. Assumptions</h2>
+<ul>
+<li>Users have internet access</li>
+<li>Payment gateways support required currencies</li>
+<li>Camping spot data provided by administrators</li>
+</ul>
+<hr>
+<p><strong>Notes for AI Agents:</strong></p>
+<ol>
+<li>Prioritize F1-F9 for MVP; implement F10-F19 in later phases</li>
+<li>Design modular architecture for easy feature additions</li>
+<li>Use placeholder APIs during development (e.g., mock weather data)</li>
+<li>Optimize for mobile-first experience</li>
+<li>Ensure all user actions provide clear feedback</li>
+</ol>
+<p>This SRS intentionally avoids implementation specifics to allow flexibility in technical approaches while defining clear functional goals.</p>

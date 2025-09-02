@@ -1,0 +1,389 @@
+<h1>Camping Spot Reservation Application - Architecture Document</h1>
+<p><strong>For AI Programming Agents</strong><br>
+<em>Backend: Hono.dev | Frontend: Vue.js | Database: PostgreSQL</em></p>
+<hr>
+<h2>1. System Overview</h2>
+<p>This architecture outlines a full-stack web application for camping spot reservations with:</p>
+<ul>
+<li><strong>API-first backend</strong> using Hono.dev for lightweight, performant services</li>
+<li><strong>Component-based frontend</strong> using Vue.js for responsive UI</li>
+<li><strong>Relational data storage</strong> using PostgreSQL for structured data integrity</li>
+<li><strong>Cloud deployment</strong> strategy for scalability and maintainability</li>
+</ul>
+<hr>
+<h2>2. Architecture Diagram</h2>
+<pre><code>┌──────────────┐     ┌──────────────┐     ┌──────────────┐
+│   Vue.js     │◄───►│  Hono.dev    │◄───►│  PostgreSQL  │
+│  Frontend    │     │   Backend    │     │   Database   │
+└──────────────┘     └──────────────┘     └──────────────┘
+       │                    │                     │
+       │                    │                     │
+       ▼                    ▼                     ▼
+┌──────────────┐     ┌──────────────┐     ┌──────────────┐
+│   Browser    │     │ Cloudflare   │     │   Database   │
+│  (Mobile/    │     │   Workers/   │     │   Mgmt       │
+│   Desktop)   │     │   Node.js    │     │   (Optional) │
+└──────────────┘     └──────────────┘     └──────────────┘
+</code></pre>
+<hr>
+<h2>3. Backend Architecture (Hono.dev)</h2>
+<h3>3.1 Structure</h3>
+<pre><code>backend/
+├── src/
+│   ├── controllers/       # Request handlers
+│   │   ├── auth.ts
+│   │   ├── camping.ts
+│   │   └── booking.ts
+│   ├── middleware/        # Custom middleware
+│   │   ├── auth.ts
+│   │   └── validation.ts
+│   ├── routes/            # Route definitions
+│   │   ├── auth.ts
+│   │   ├── camping.ts
+│   │   └── booking.ts
+│   ├── services/          # Business logic
+│   │   ├── auth.ts
+│   │   ├── camping.ts
+│   │   └── payment.ts
+│   ├── utils/             # Helper functions
+│   │   ├── db.ts          # Database connection
+│   │   └── errors.ts      # Error handling
+│   └── app.ts             # Hono app initialization
+├── tests/                 # Test files
+└── package.json
+</code></pre>
+<h3>3.2 Key Endpoints</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Endpoint</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GET</td>
+<td><code>/api/camping-spots</code></td>
+<td>List all camping spots with filters</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/api/camping-spots/:id</code></td>
+<td>Get details for a specific spot</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/api/camping-spots/availability</code></td>
+<td>Check availability for dates</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/api/bookings</code></td>
+<td>Create a new reservation</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/api/bookings/:id</code></td>
+<td>Get booking details</td>
+</tr>
+<tr>
+<td>PUT</td>
+<td><code>/api/bookings/:id</code></td>
+<td>Modify existing booking</td>
+</tr>
+<tr>
+<td>DELETE</td>
+<td><code>/api/bookings/:id</code></td>
+<td>Cancel a booking</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/api/auth/register</code></td>
+<td>User registration</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/api/auth/login</code></td>
+<td>User authentication</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/api/users/me</code></td>
+<td>Get current user profile</td>
+</tr>
+</tbody>
+</table>
+<h3>3.3 Implementation Guidance</h3>
+<ul>
+<li>Use <strong>Hono's built-in middleware</strong> for CORS, logging, and error handling</li>
+<li>Implement <strong>JWT authentication</strong> with <code>@hono/jwt</code> middleware</li>
+<li>Use <strong>Zod</strong> for request validation in middleware</li>
+<li>Create <strong>modular route handlers</strong> in separate files</li>
+<li>Implement <strong>database connection pooling</strong> with <code>pg</code> package</li>
+<li>Use <strong>environment variables</strong> for configuration</li>
+</ul>
+<hr>
+<h2>4. Frontend Architecture (Vue.js)</h2>
+<h3>4.1 Structure</h3>
+<pre><code>frontend/
+├── public/               # Static assets
+├── src/
+│   ├── assets/           # Images, styles
+│   ├── components/       # Reusable components
+│   │   ├── ui/           # Base UI components
+│   │   ├── camping/      # Camping-related components
+│   │   └── booking/      # Booking-related components
+│   ├── composables/      # Reusable logic
+│   │   ├── useAuth.ts    # Authentication logic
+│   │   └── useApi.ts     # API calls
+│   ├── router/           # Vue Router configuration
+│   ├── stores/           # Pinia state management
+│   │   ├── auth.ts       # Auth state
+│   │   └── camping.ts    # Camping data state
+│   ├── views/            # Page components
+│   │   ├── Home.vue
+│   │   ├── CampingSpots.vue
+│   │   ├── Booking.vue
+│   │   └── Profile.vue
+│   ├── App.vue           # Root component
+│   └── main.ts           # App entry point
+├── tests/                # Test files
+└── package.json
+</code></pre>
+<h3>4.2 Key Components</h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CampingSpotCard</code></td>
+<td>Display individual camping spot info</td>
+</tr>
+<tr>
+<td><code>AvailabilityCalendar</code></td>
+<td>Show available dates visually</td>
+</tr>
+<tr>
+<td><code>BookingForm</code></td>
+<td>Handle reservation creation</td>
+</tr>
+<tr>
+<td><code>SearchFilters</code></td>
+<td>Filter camping spots by criteria</td>
+</tr>
+<tr>
+<td><code>UserDashboard</code></td>
+<td>Show user's bookings</td>
+</tr>
+<tr>
+<td><code>ReviewForm</code></td>
+<td>Submit reviews after stay</td>
+</tr>
+</tbody>
+</table>
+<h3>4.3 Implementation Guidance</h3>
+<ul>
+<li>Use <strong>Vue 3 Composition API</strong> with <code>&lt;script setup&gt;</code> syntax</li>
+<li>Implement <strong>Pinia</strong> for state management</li>
+<li>Use <strong>Vue Router</strong> for navigation and route guards</li>
+<li>Create <strong>composables</strong> for reusable logic (API calls, auth)</li>
+<li>Use <strong>Vite</strong> for fast development and building</li>
+<li>Implement <strong>responsive design</strong> with Tailwind CSS</li>
+<li>Use <strong>VueUse</strong> for common utilities (debounce, localStorage)</li>
+</ul>
+<hr>
+<h2>5. Database Schema (PostgreSQL)</h2>
+<h3>5.1 Core Tables</h3>
+<pre class="language-sql"><code class="language-sql"><span class="token comment">-- Users table</span>
+<span class="token keyword">CREATE</span> <span class="token keyword">TABLE</span> users <span class="token punctuation">(</span>
+  id <span class="token keyword">SERIAL</span> <span class="token keyword">PRIMARY</span> <span class="token keyword">KEY</span><span class="token punctuation">,</span>
+  email <span class="token keyword">VARCHAR</span><span class="token punctuation">(</span><span class="token number">255</span><span class="token punctuation">)</span> <span class="token keyword">UNIQUE</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
+  password_hash <span class="token keyword">VARCHAR</span><span class="token punctuation">(</span><span class="token number">255</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
+  first_name <span class="token keyword">VARCHAR</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
+  last_name <span class="token keyword">VARCHAR</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
+  created_at <span class="token keyword">TIMESTAMP</span> <span class="token keyword">DEFAULT</span> <span class="token keyword">CURRENT_TIMESTAMP</span>
+<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">-- Camping spots table</span>
+<span class="token keyword">CREATE</span> <span class="token keyword">TABLE</span> camping_spots <span class="token punctuation">(</span>
+  id <span class="token keyword">SERIAL</span> <span class="token keyword">PRIMARY</span> <span class="token keyword">KEY</span><span class="token punctuation">,</span>
+  name <span class="token keyword">VARCHAR</span><span class="token punctuation">(</span><span class="token number">255</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
+  description <span class="token keyword">TEXT</span><span class="token punctuation">,</span>
+  location <span class="token keyword">VARCHAR</span><span class="token punctuation">(</span><span class="token number">255</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
+  price_per_night <span class="token keyword">DECIMAL</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
+  max_guests <span class="token keyword">INTEGER</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
+  amenities <span class="token keyword">TEXT</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token comment">-- Array of amenities</span>
+  images <span class="token keyword">TEXT</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token comment">-- Array of image URLs</span>
+  created_at <span class="token keyword">TIMESTAMP</span> <span class="token keyword">DEFAULT</span> <span class="token keyword">CURRENT_TIMESTAMP</span>
+<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">-- Availability table</span>
+<span class="token keyword">CREATE</span> <span class="token keyword">TABLE</span> availability <span class="token punctuation">(</span>
+  id <span class="token keyword">SERIAL</span> <span class="token keyword">PRIMARY</span> <span class="token keyword">KEY</span><span class="token punctuation">,</span>
+  camping_spot_id <span class="token keyword">INTEGER</span> <span class="token keyword">REFERENCES</span> camping_spots<span class="token punctuation">(</span>id<span class="token punctuation">)</span> <span class="token keyword">ON</span> <span class="token keyword">DELETE</span> <span class="token keyword">CASCADE</span><span class="token punctuation">,</span>
+  <span class="token keyword">date</span> <span class="token keyword">DATE</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
+  available <span class="token keyword">BOOLEAN</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+  <span class="token keyword">UNIQUE</span><span class="token punctuation">(</span>camping_spot_id<span class="token punctuation">,</span> <span class="token keyword">date</span><span class="token punctuation">)</span>
+<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">-- Bookings table</span>
+<span class="token keyword">CREATE</span> <span class="token keyword">TABLE</span> bookings <span class="token punctuation">(</span>
+  id <span class="token keyword">SERIAL</span> <span class="token keyword">PRIMARY</span> <span class="token keyword">KEY</span><span class="token punctuation">,</span>
+  user_id <span class="token keyword">INTEGER</span> <span class="token keyword">REFERENCES</span> users<span class="token punctuation">(</span>id<span class="token punctuation">)</span> <span class="token keyword">ON</span> <span class="token keyword">DELETE</span> <span class="token keyword">CASCADE</span><span class="token punctuation">,</span>
+  camping_spot_id <span class="token keyword">INTEGER</span> <span class="token keyword">REFERENCES</span> camping_spots<span class="token punctuation">(</span>id<span class="token punctuation">)</span> <span class="token keyword">ON</span> <span class="token keyword">DELETE</span> <span class="token keyword">CASCADE</span><span class="token punctuation">,</span>
+  start_date <span class="token keyword">DATE</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
+  end_date <span class="token keyword">DATE</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
+  total_price <span class="token keyword">DECIMAL</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
+  <span class="token keyword">status</span> <span class="token keyword">VARCHAR</span><span class="token punctuation">(</span><span class="token number">50</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token string">'confirmed'</span><span class="token punctuation">,</span> <span class="token comment">-- confirmed, cancelled, completed</span>
+  created_at <span class="token keyword">TIMESTAMP</span> <span class="token keyword">DEFAULT</span> <span class="token keyword">CURRENT_TIMESTAMP</span>
+<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">-- Reviews table</span>
+<span class="token keyword">CREATE</span> <span class="token keyword">TABLE</span> reviews <span class="token punctuation">(</span>
+  id <span class="token keyword">SERIAL</span> <span class="token keyword">PRIMARY</span> <span class="token keyword">KEY</span><span class="token punctuation">,</span>
+  booking_id <span class="token keyword">INTEGER</span> <span class="token keyword">REFERENCES</span> bookings<span class="token punctuation">(</span>id<span class="token punctuation">)</span> <span class="token keyword">ON</span> <span class="token keyword">DELETE</span> <span class="token keyword">CASCADE</span><span class="token punctuation">,</span>
+  rating <span class="token keyword">INTEGER</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span> <span class="token keyword">CHECK</span> <span class="token punctuation">(</span>rating <span class="token operator">>=</span> <span class="token number">1</span> <span class="token operator">AND</span> rating <span class="token operator">&lt;=</span> <span class="token number">5</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token keyword">comment</span> <span class="token keyword">TEXT</span><span class="token punctuation">,</span>
+  created_at <span class="token keyword">TIMESTAMP</span> <span class="token keyword">DEFAULT</span> <span class="token keyword">CURRENT_TIMESTAMP</span>
+<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<h3>5.2 Implementation Guidance</h3>
+<ul>
+<li>Use <strong>UUIDs</strong> instead of SERIAL if distributed systems needed</li>
+<li>Create <strong>indexes</strong> on frequently queried columns (email, camping_spot_id)</li>
+<li>Implement <strong>foreign key constraints</strong> for data integrity</li>
+<li>Use <strong>JSONB</strong> instead of TEXT[] for more complex amenities if needed</li>
+<li>Add <strong>triggers</strong> for maintaining data consistency (e.g., update availability on booking)</li>
+<li>Create <strong>materialized views</strong> for complex reporting needs</li>
+</ul>
+<hr>
+<h2>6. Authentication &amp; Security</h2>
+<h3>6.1 Authentication Flow</h3>
+<ol>
+<li>User registers with email/password</li>
+<li>Backend hashes password with bcrypt</li>
+<li>On login, backend verifies credentials and issues JWT</li>
+<li>Frontend stores JWT in localStorage/httpOnly cookie</li>
+<li>Subsequent requests include JWT in Authorization header</li>
+</ol>
+<h3>6.2 Security Measures</h3>
+<ul>
+<li><strong>Password hashing</strong> with bcrypt (salt rounds: 12)</li>
+<li><strong>JWT expiration</strong> (15 minutes access, 7 days refresh)</li>
+<li><strong>HTTPS</strong> for all communications</li>
+<li><strong>CORS</strong> configured for specific domains</li>
+<li><strong>Rate limiting</strong> on authentication endpoints</li>
+<li><strong>Input validation</strong> on all API endpoints</li>
+<li><strong>SQL injection prevention</strong> with parameterized queries</li>
+<li><strong>Role-based access control</strong> for admin functions</li>
+</ul>
+<hr>
+<h2>7. External Integrations</h2>
+<h3>7.1 Payment Processing</h3>
+<ul>
+<li><strong>Stripe</strong> integration for payment processing</li>
+<li>Implement webhook handlers for payment events</li>
+<li>Store payment intent IDs, not full payment details</li>
+</ul>
+<h3>7.2 Email Notifications</h3>
+<ul>
+<li><strong>Resend</strong> or <strong>SendGrid</strong> for transactional emails</li>
+<li>Templates for:
+<ul>
+<li>Booking confirmation</li>
+<li>Cancellation notice</li>
+<li>Pre-arrival reminder</li>
+<li>Review request</li>
+</ul>
+</li>
+</ul>
+<h3>7.3 Additional Services</h3>
+<ul>
+<li><strong>Mapbox</strong> or <strong>Google Maps</strong> for location visualization</li>
+<li><strong>Weather API</strong> for weather forecasts</li>
+<li><strong>Cloudinary</strong> for image storage and optimization</li>
+</ul>
+<hr>
+<h2>8. Deployment Strategy</h2>
+<h3>8.1 Backend Deployment</h3>
+<ul>
+<li><strong>Platform</strong>: Cloudflare Workers or Deno Deploy for Hono</li>
+<li><strong>Environment Variables</strong>: Securely store database credentials, API keys</li>
+<li><strong>CI/CD</strong>: Automated deployment from GitHub/GitLab</li>
+<li><strong>Monitoring</strong>: Cloudflare analytics or custom monitoring</li>
+</ul>
+<h3>8.2 Frontend Deployment</h3>
+<ul>
+<li><strong>Platform</strong>: Vercel or Netlify for Vue.js</li>
+<li><strong>Build Process</strong>: Vite build optimized for production</li>
+<li><strong>CDN</strong>: Asset delivery via edge network</li>
+<li><strong>Environment</strong>: API endpoint configuration</li>
+</ul>
+<h3>8.3 Database Deployment</h3>
+<ul>
+<li><strong>Service</strong>: ElephantSQL, Supabase, or AWS RDS</li>
+<li><strong>Backups</strong>: Automated daily backups</li>
+<li><strong>Migrations</strong>: Version-controlled schema changes</li>
+</ul>
+<hr>
+<h2>9. Development Workflow</h2>
+<h3>9.1 Local Development</h3>
+<ol>
+<li><strong>Database</strong>: Local PostgreSQL with Docker</li>
+<li><strong>Backend</strong>: <code>npm run dev</code> for Hono hot reload</li>
+<li><strong>Frontend</strong>: <code>npm run dev</code> for Vite dev server</li>
+<li><strong>API Proxy</strong>: Configure Vite to proxy API requests</li>
+</ol>
+<h3>9.2 Testing Strategy</h3>
+<ul>
+<li><strong>Backend</strong>: Jest/ Vitest for unit tests, Supertest for integration</li>
+<li><strong>Frontend</strong>: Vitest for unit tests, Cypress for E2E</li>
+<li><strong>Database</strong>: Testcontainers for isolated test DB</li>
+</ul>
+<h3>9.3 Code Quality</h3>
+<ul>
+<li><strong>Linting</strong>: ESLint with shared config</li>
+<li><strong>Formatting</strong>: Prettier with consistent rules</li>
+<li><strong>TypeScript</strong>: Strict mode for both frontend and backend</li>
+<li><strong>Pre-commit hooks</strong>: Husky for linting and testing</li>
+</ul>
+<hr>
+<h2>10. Scalability Considerations</h2>
+<h3>10.1 Database Optimization</h3>
+<ul>
+<li><strong>Connection pooling</strong>: PgBouncer or built-in pooling</li>
+<li><strong>Read replicas</strong>: For reporting and analytics</li>
+<li><strong>Caching</strong>: Redis for frequently accessed data</li>
+<li><strong>Query optimization</strong>: Regular analysis and indexing</li>
+</ul>
+<h3>10.2 Backend Scaling</h3>
+<ul>
+<li><strong>Serverless</strong>: Auto-scaling with Cloudflare Workers</li>
+<li><strong>Microservices</strong>: Separate services for payments, notifications</li>
+<li><strong>Queue system</strong>: For background jobs (email sending)</li>
+</ul>
+<h3>10.3 Frontend Optimization</h3>
+<ul>
+<li><strong>Code splitting</strong>: Route-based and component-based</li>
+<li><strong>Lazy loading</strong>: Images and non-critical components</li>
+<li><strong>Caching</strong>: Service worker for offline functionality</li>
+<li><strong>CDN</strong>: Global asset distribution</li>
+</ul>
+<hr>
+<p><strong>AI Agent Implementation Notes:</strong></p>
+<ol>
+<li>Start with core features (auth, camping spots, bookings) before adding optional features</li>
+<li>Implement backend first with API testing, then build frontend</li>
+<li>Use TypeScript throughout for type safety</li>
+<li>Prioritize security from day one</li>
+<li>Build modular components for easy extension</li>
+<li>Implement comprehensive error handling and logging</li>
+<li>Follow RESTful conventions for API design</li>
+<li>Create a responsive mobile-first UI</li>
+<li>Add comprehensive testing at all levels</li>
+<li>Document all APIs with OpenAPI/Swagger specification</li>
+</ol>
