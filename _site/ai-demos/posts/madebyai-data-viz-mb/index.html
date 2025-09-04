@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizing data - Manitoba Rainfall</title>
+    <meta name="description" content="AI created data visualiztaions for Manitoba rainfall data">
+    
+    <!-- Tailwind CSS -->
+    <link rel="stylesheet" href="/assets/css/tailwind.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    
+    <!-- Dark mode support -->
+    <script>
+        // Set dark mode based on system preference only (no toggle)
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen flex flex-col">
+    <div class="bg-white dark:bg-gray-800 shadow-sm">
+        <div class="container mx-auto px-2 py-2">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                <nav class="flex flex-col md:flex-row mt-4 md:mt-0">
+                    <a href="/" class="py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Home</a>
+                    <span class="hidden md:block mx-2 text-gray-300 dark:text-gray-600">|</span>
+                    <a href="/ai-demos/" class="py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">AI Demos</a>
+                    <span class="hidden md:block mx-2 text-gray-300 dark:text-gray-600">|</span>
+                    <a href="/it-centre/" class="py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">IT Centre</a>
+                    <span class="hidden md:block mx-2 text-gray-300 dark:text-gray-600">|</span>
+                    <a href="/blog/" class="py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Blog</a>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <main class="flex-grow container mx-auto px-4 mt-10 mb-10">
+        
+<article class="max-w-3xl mx-auto mt-12">
+    <header class="mb-8">
+        <div class="flex justify-between items-center mb-4">
+            <span class="tag 
+                tag-blog
+                ">
+                Blog Post
+                
+            </span>
+            <time class="text-gray-500 dark:text-gray-400">September 3, 2025</time>
+        </div>
+        <h1 class="text-3xl md:text-4xl font-bold mb-4">Visualizing data - Manitoba Rainfall</h1>
+        
+        <p class="text-xl text-gray-600 dark:text-gray-300">AI created data visualiztaions for Manitoba rainfall data</p>
+        
+    </header>
+    
+    <div class="prose prose-lg max-w-none dark:prose-invert">
+        <p>The dataset <a href="/ai-demos/demos/HRDPA_Observed_Accumulated_Precipitation_-_Past_1day,_3_days_&amp;_7_days.csv">here</a></p>
+<p>Source of the dataset <a href="https://geoportal.gov.mb.ca/datasets/445779f6e02c4bab85d8cbeb50837a85_0/explore?location=52.089919%2C-103.657211%2C5.83">here</a></p>
+<p>Been a long day, so I'll summarize how I approached prompting Qwen (note - the chat Qwen model, not the coding specific model)</p>
+<ol>
+<li>Gave it the data, asked it to explain it to me</li>
+<li>Asked it brainstorm <em>cool</em> (note, this is not the exact wording) ways to visualize the data.</li>
+<li>Out of the suggestions, told it to implement 2 of them</li>
+</ol>
+<p>This is a bar chart visualization <a href="/ai-demos/demos/Qwen-MB-Precipitation-barchart.html">here</a><br>
+https://www.siliconspark.ca/ai-demos/demos/Qwen-MB-Precipitation-barchart.html</p>
+<p>This is a sunburst visualization <a href="/ai-demos/demos/Qwen-MB-Precipitation-sunburst.html">here</a><br>
+https://www.siliconspark.ca/ai-demos/demos/Qwen-MB-Precipitation-sunburst.html</p>
+<p><strong>NOTE</strong><br>
+<strong>I haven't verified that the visualizations are correct.  This was more of a field test to see if I could get the AI to do something close to what I had in mind</strong></p>
+<p>It took several (think +3) iterations to get the bar chart looking the way it is.  If I'm less lazy, I'll post the iterations as an update.</p>
+<p>Here's a summary (order is likely wrong, I'm going from memory, cut me some slack) of the iteration loop we went through to get the bar charts graph the way it is:</p>
+<ol>
+<li>Originally, it was supposed to break down the bars into individual units, each representing a set unit of pools.</li>
+<li>Then, we went down the route where it created SVGs looking like a pool to represent the units, but it was not performant because of how many SVGs were needed</li>
+<li>Tried grouping SVGs into buckets, but that made the visualization look <em>wrong</em> - all bars were the same length due to grouping rounding</li>
+<li>Switched back to bars, added a legend which puts numbers on the right of the bars</li>
+<li>Further visualization issues, alignment, scaling, etc</li>
+</ol>
+<p>Just to be clear, I told Qwen to use <a href="https://d3js.org/">D3.js</a> to visualize the data - Qwen just wrote the code to use the library with the data.</p>
+
+    </div>
+    
+    <footer class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
+        <div class="flex justify-between items-center">
+            <a href="/" class="text-blue-600 dark:text-blue-400 hover:underline">&larr; Back to Home</a>
+        </div>
+    </footer>
+</article>
+    </main>
+
+    <footer class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+        <div class="container mx-auto px-2 py-2">
+            <div class="text-center text-gray-600 dark:text-gray-400">
+                <p>&copy; 2025 SiliconSpark. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

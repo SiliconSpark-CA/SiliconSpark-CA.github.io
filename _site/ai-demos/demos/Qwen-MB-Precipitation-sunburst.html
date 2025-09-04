@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Manitoba Precipitation Sunburst</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f2f5;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #333;
+    }
+    h1 {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+    p {
+      max-width: 800px;
+      text-align: center;
+      color: #555;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+    #sunburst {
+      margin-top: 20px;
+    }
+    .tooltip {
+      position: absolute;
+      padding: 8px 12px;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      border-radius: 6px;
+      font-size: 14px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .label {
+      font-weight: bold;
+      fill: white;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+    }
+  </style>
+</head>
+<body>
+  <h1>🌧️ Manitoba Observed Precipitation – Sunburst Hierarchy</h1>
+  <p>
+    Interactive radial chart showing how rainfall is distributed by duration and intensity.<br>
+    Size = geographic area affected | Color = average rainfall intensity
+  </p>
+  <div id="sunburst"></div>
+  <div class="tooltip"></div>
+
+  <script>
+    // Parse and structure the data
+    const rawData = [
+      { Observation_Period: "1d", Precipitation_Range: "0-1", Avg_Accumulated_Precip: 0.06, SHAPE__Area: 3242582997259.33 },
+      { Observation_Period: "1d", Precipitation_Range: "1-2", Avg_Accumulated_Precip: 1.43, SHAPE__Area: 377054595753.691 },
+      { Observation_Period: "1d", Precipitation_Range: "2-5", Avg_Accumulated_Precip: 3.27, SHAPE__Area: 507062769280.699 },
+      { Observation_Period: "1d", Precipitation_Range: "5-10", Avg_Accumulated_Precip: 7.05, SHAPE__Area: 332473759914.664 },
+      { Observation_Period: "1d", Precipitation_Range: "10-15", Avg_Accumulated_Precip: 12.24, SHAPE__Area: 90589448221.6406 },
+      { Observation_Period: "1d", Precipitation_Range: "15-20", Avg_Accumulated_Precip: 17.21, SHAPE__Area: 23999166304.8984 },
+      { Observation_Period: "1d", Precipitation_Range: "20-25", Avg_Accumulated_Precip: 22.34, SHAPE__Area: 6895958578.42969 },
+      { Observation_Period: "1d", Precipitation_Range: "25-30", Avg_Accumulated_Precip: 27.35, SHAPE__Area: 4910314959.89844 },
+      { Observation_Period: "1d", Precipitation_Range: "30-40", Avg_Accumulated_Precip: 34.43, SHAPE__Area: 5822200782.53125 },
+
+      { Observation_Period: "3d", Precipitation_Range: "0-1", Avg_Accumulated_Precip: 0.08, SHAPE__Area: 2987651844048.86 },
+      { Observation_Period: "3d", Precipitation_Range: "1-2", Avg_Accumulated_Precip: 1.45, SHAPE__Area: 391848623723.703 },
+      { Observation_Period: "3d", Precipitation_Range: "2-5", Avg_Accumulated_Precip: 3.33, SHAPE__Area: 588511146523.293 },
+      { Observation_Period: "3d", Precipitation_Range: "5-10", Avg_Accumulated_Precip: 7.17, SHAPE__Area: 462918645297.156 },
+      { Observation_Period: "3d", Precipitation_Range: "10-15", Avg_Accumulated_Precip: 12.31, SHAPE__Area: 138392194039.203 },
+      { Observation_Period: "3d", Precipitation_Range: "15-20", Avg_Accumulated_Precip: 17.32, SHAPE__Area: 42517381456.0078 },
+      { Observation_Period: "3d", Precipitation_Range: "20-25", Avg_Accumulated_Precip: 22.38, SHAPE__Area: 9970674396.4375 },
+      { Observation_Period: "3d", Precipitation_Range: "25-30", Avg_Accumulated_Precip: 27.37, SHAPE__Area: 6280005574.65625 },
+      { Observation_Period: "3d", Precipitation_Range: "30-40", Avg_Accumulated_Precip: 34.53, SHAPE__Area: 6861101966.35156 },
+      { Observation_Period: "3d", Precipitation_Range: "40-50", Avg_Accumulated_Precip: 44.41, SHAPE__Area: 1519472162.53906 },
+
+      { Observation_Period: "7d", Precipitation_Range: "0-1", Avg_Accumulated_Precip: 0.06, SHAPE__Area: 2701896951184.27 },
+      { Observation_Period: "7d", Precipitation_Range: "1-2", Avg_Accumulated_Precip: 1.47, SHAPE__Area: 513918788108.527 },
+      { Observation_Period: "7d", Precipitation_Range: "2-5", Avg_Accumulated_Precip: 3.38, SHAPE__Area: 724537944084.98 },
+      { Observation_Period: "7d", Precipitation_Range: "5-10", Avg_Accumulated_Precip: 7.28, SHAPE__Area: 536181382852.957 },
+      { Observation_Period: "7d", Precipitation_Range: "10-15", Avg_Accumulated_Precip: 12.31, SHAPE__Area: 167128427010.18 },
+      { Observation_Period: "7d", Precipitation_Range: "15-20", Avg_Accumulated_Precip: 17.3, SHAPE__Area: 54440714536.4688 },
+      { Observation_Period: "7d", Precipitation_Range: "20-25", Avg_Accumulated_Precip: 22.36, SHAPE__Area: 13436563428.2266 },
+      { Observation_Period: "7d", Precipitation_Range: "25-30", Avg_Accumulated_Precip: 27.41, SHAPE__Area: 6989354854.07812 },
+      { Observation_Period: "7d", Precipitation_Range: "30-40", Avg_Accumulated_Precip: 34.62, SHAPE__Area: 7460530125.95312 },
+      { Observation_Period: "7d", Precipitation_Range: "40-50", Avg_Accumulated_Precip: 44.55, SHAPE__Area: 1613411452.07812 }
+    ];
+
+    // Map period codes to labels
+    const periodLabels = { "1d": "1-Day", "3d": "3-Day", "7d": "7-Day" };
+
+    // Build hierarchy
+    const rootData = {
+      name: "Manitoba Rainfall",
+      children: []
+    };
+
+    const grouped = d3.group(rawData, d => d.Observation_Period);
+
+    for (const [period, values] of grouped) {
+      const children = values.map(d => ({
+        name: d.Precipitation_Range.replace("-", "–") + " mm",
+        value: d.SHAPE__Area,
+        avgPrecip: d.Avg_Accumulated_Precip,
+        period: periodLabels[period]
+      }));
+
+      rootData.children.push({
+        name: periodLabels[period],
+        children: children
+      });
+    }
+
+    // Set dimensions
+    const width = 800;
+    const height = 800;
+    const radius = width / 2;
+
+    const svg = d3.select("#sunburst")
+      .append("svg")
+      .attr("width", width)
+      .attr("height", height)
+      .append("g")
+      .attr("transform", `translate(${width/2},${height/2})`);
+
+    const partition = d3.partition()
+      .size([2 * Math.PI, radius]);
+
+    const root = d3.hierarchy(rootData)
+      .sum(d => d.value)
+      .sort((a, b) => b.height - a.height || a.value - b.value);
+
+    partition(root);
+
+    // Color scale based on average precipitation
+    const color = d3.scaleSequential(d3.interpolateBlues)
+      .domain([0, 50]); // 0 to 50 mm
+
+    const arc = d3.arc()
+      .startAngle(d => d.x0)
+      .endAngle(d => d.x1)
+      .innerRadius(d => d.y0)
+      .outerRadius(d => d.y1);
+
+    const tooltip = d3.select(".tooltip");
+
+    const path = svg.selectAll("path")
+      .data(root.descendants())
+      .enter()
+      .filter(d => d.depth > 0) // hide root
+      .append("path")
+      .attr("d", arc)
+      .attr("fill", d => d.depth === 1 ? "#ccc" : color(d.data.avgPrecip))
+      .attr("fill-opacity", 0.9)
+      .style("stroke", "#fff")
+      .style("stroke-width", 1)
+      .on("mouseover", function(event, d) {
+        let text = "";
+        if (d.depth === 1) {
+          text = `<b>${d.data.name}</b><br/>Total Area: ${(d.value / 1e9).toFixed(1)} billion m²`;
+        } else {
+          text = `<b>${d.data.name}</b> (${d.data.period})<br/>
+                  Avg Rain: ${d.data.avgPrecip} mm<br/>
+                  Area: ${(d.value / 1e6).toFixed(1)} million m²`;
+        }
+        tooltip.html(text)
+          .style("opacity", 1)
+          .style("left", (event.pageX + 10) + "px")
+          .style("top", (event.pageY - 28) + "px");
+      })
+      .on("mouseout", () => {
+        tooltip.style("opacity", 0);
+      });
+
+    // Add labels
+    svg.selectAll("text")
+      .data(root.descendants())
+      .enter()
+      .filter(d => d.depth > 0 && d.x1 - d.x0 > 0.05) // only if arc is wide enough
+      .append("text")
+      .attr("transform", function(d) {
+        const midAngle = (d.x0 + d.x1) / 2;
+        return `rotate(${midAngle * 180 / Math.PI - 90}) translate(${d.y0 + 20}, 0) rotate(${midAngle > Math.PI ? 180 : 0})`;
+      })
+      .attr("text-anchor", function(d) {
+        const midAngle = (d.x0 + d.x1) / 2;
+        return (midAngle > Math.PI ? "end" : "start");
+      })
+      .attr("dy", "0.35em")
+      .text(d => d.depth === 1 ? d.data.name : d.data.name.split(" ")[0])
+      .attr("class", "label")
+      .style("font-size", d => d.depth === 1 ? "14px" : "12px");
+  </script>
+</body>
+</html>
