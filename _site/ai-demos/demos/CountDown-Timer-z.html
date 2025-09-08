@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Countdown Timer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #333;
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            width: 90%;
+            max-width: 450px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        .setup-state, .running-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .running-state {
+            display: none;
+        }
+
+        .time-inputs {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .time-input-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .time-input-group label {
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        .time-input-group input {
+            width: 70px;
+            height: 70px;
+            font-size: 24px;
+            text-align: center;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .time-input-group input:focus {
+            border-color: #6a11cb;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 5px;
+            min-width: 120px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+
+        .timer-display {
+            font-size: 64px;
+            font-weight: 700;
+            margin: 30px 0;
+            color: #333;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .timer-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .progress-ring {
+            position: absolute;
+            width: 280px;
+            height: 280px;
+            transform: rotate(-90deg);
+            opacity: 0.2;
+        }
+
+        .progress-ring-circle {
+            stroke: #6a11cb;
+            stroke-width: 4;
+            fill: transparent;
+            stroke-dasharray: 880;
+            stroke-dashoffset: 0;
+            transition: stroke-dashoffset 1s linear;
+        }
+
+        .timer-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 300px;
+            height: 300px;
+            margin: 0 auto;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4caf50;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transform: translateX(150%);
+            transition: transform 0.5s ease;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            .timer-display {
+                font-size: 48px;
+            }
+            
+            .timer-container {
+                width: 250px;
+                height: 250px;
+            }
+            
+            .progress-ring {
+                width: 230px;
+                height: 230px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Countdown Timer</h1>
+        
+        <div class="setup-state" id="setupState">
+            <div class="time-inputs">
+                <div class="time-input-group">
+                    <label for="hours">Hours</label>
+                    <input type="number" id="hours" min="0" max="23" value="0">
+                </div>
+                <div class="time-input-group">
+                    <label for="minutes">Minutes</label>
+                    <input type="number" id="minutes" min="0" max="59" value="5">
+                </div>
+                <div class="time-input-group">
+                    <label for="seconds">Seconds</label>
+                    <input type="number" id="seconds" min="0" max="59" value="0">
+                </div>
+            </div>
+            <button class="btn" id="startBtn">Start Timer</button>
+        </div>
+        
+        <div class="running-state" id="runningState">
+            <div class="timer-container">
+                <svg class="progress-ring" id="progressRing">
+                    <circle class="progress-ring-circle" id="progressCircle" cx="140" cy="140" r="140"></circle>
+                </svg>
+                <div class="timer-display" id="timerDisplay">05:00</div>
+            </div>
+            <div class="timer-controls">
+                <button class="btn" id="pauseResumeBtn">Pause</button>
+                <button class="btn btn-secondary" id="cancelBtn">Cancel</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="notification" id="notification">Timer completed!</div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get DOM elements
+            const setupState = document.getElementById('setupState');
+            const runningState = document.getElementById('runningState');
+            const hoursInput = document.getElementById('hours');
+            const minutesInput = document.getElementById('minutes');
+            const secondsInput = document.getElementById('seconds');
+            const startBtn = document.getElementById('startBtn');
+            const pauseResumeBtn = document.getElementById('pauseResumeBtn');
+            const cancelBtn = document.getElementById('cancelBtn');
+            const timerDisplay = document.getElementById('timerDisplay');
+            const notification = document.getElementById('notification');
+            const progressCircle = document.getElementById('progressCircle');
+            
+            // Timer variables
+            let countdown;
+            let totalSeconds = 0;
+            let remainingSeconds = 0;
+            let isPaused = false;
+            
+            // Start timer
+            startBtn.addEventListener('click', function() {
+                const hours = parseInt(hoursInput.value) || 0;
+                const minutes = parseInt(minutesInput.value) || 0;
+                const seconds = parseInt(secondsInput.value) || 0;
+                
+                totalSeconds = hours * 3600 + minutes * 60 + seconds;
+                
+                if (totalSeconds <= 0) {
+                    showNotification('Please set a valid time!');
+                    return;
+                }
+                
+                remainingSeconds = totalSeconds;
+                isPaused = false;
+                
+                // Update UI
+                setupState.style.display = 'none';
+                runningState.style.display = 'flex';
+                pauseResumeBtn.textContent = 'Pause';
+                
+                // Reset progress ring
+                progressCircle.style.strokeDashoffset = 0;
+                
+                // Start countdown
+                updateTimerDisplay();
+                startCountdown();
+            });
+            
+            // Pause/Resume timer
+            pauseResumeBtn.addEventListener('click', function() {
+                if (isPaused) {
+                    isPaused = false;
+                    pauseResumeBtn.textContent = 'Pause';
+                    startCountdown();
+                } else {
+                    isPaused = true;
+                    pauseResumeBtn.textContent = 'Resume';
+                    clearInterval(countdown);
+                }
+            });
+            
+            // Cancel timer
+            cancelBtn.addEventListener('click', function() {
+                clearInterval(countdown);
+                setupState.style.display = 'flex';
+                runningState.style.display = 'none';
+            });
+            
+            // Start countdown
+            function startCountdown() {
+                countdown = setInterval(function() {
+                    if (remainingSeconds <= 0) {
+                        clearInterval(countdown);
+                        timerComplete();
+                        return;
+                    }
+                    
+                    remainingSeconds--;
+                    updateTimerDisplay();
+                    updateProgressRing();
+                }, 1000);
+            }
+            
+            // Update timer display
+            function updateTimerDisplay() {
+                const hours = Math.floor(remainingSeconds / 3600);
+                const minutes = Math.floor((remainingSeconds % 3600) / 60);
+                const seconds = remainingSeconds % 60;
+                
+                let displayText = '';
+                
+                if (hours > 0) {
+                    displayText = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                } else {
+                    displayText = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                }
+                
+                timerDisplay.textContent = displayText;
+            }
+            
+            // Update progress ring
+            function updateProgressRing() {
+                const circumference = 2 * Math.PI * 140; // 2πr where r=140
+                const offset = circumference - (remainingSeconds / totalSeconds) * circumference;
+                progressCircle.style.strokeDashoffset = offset;
+            }
+            
+            // Timer complete
+            function timerComplete() {
+                showNotification('Timer completed!');
+                
+                // Play sound (if browser supports it)
+                try {
+                    const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmFgU7k9n1unEiBC13yO/eizEIHWq+8+OWT');
+                    audio.play();
+                } catch (e) {
+                    console.log('Audio notification not supported');
+                }
+                
+                // Return to setup state after a delay
+                setTimeout(function() {
+                    setupState.style.display = 'flex';
+                    runningState.style.display = 'none';
+                }, 3000);
+            }
+            
+            // Show notification
+            function showNotification(message) {
+                notification.textContent = message;
+                notification.classList.add('show');
+                
+                setTimeout(function() {
+                    notification.classList.remove('show');
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>
