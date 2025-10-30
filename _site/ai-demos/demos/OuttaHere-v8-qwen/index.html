@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Outta Here Countdown - November 21st, 2025</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #004e92, #000428);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: rgba(0, 30, 60, 0.85);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            color: #4fc3f7;
+        }
+
+        .date-container {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .date-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .date-label {
+            font-size: 1rem;
+            opacity: 0.7;
+            margin-bottom: 5px;
+            color: #bbdefb;
+        }
+
+        .date-value {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            color: #4fc3f7;
+        }
+
+        .current-date-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .current-date-label {
+            font-size: 1rem;
+            opacity: 0.7;
+            margin-bottom: 5px;
+            color: #bbdefb;
+        }
+
+        .current-date {
+            font-size: 1.3rem; /* Changed to match target date font size */
+            opacity: 0.9; /* Changed to match target date opacity */
+            color: #81d4fa;
+        }
+
+        .countdown-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin: 40px 0;
+        }
+
+        .time-unit {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            min-width: 120px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .time-value {
+            font-size: 3.5rem;
+            font-weight: bold;
+            color: #4fc3f7;
+            text-shadow: 0 0 10px rgba(79, 195, 247, 0.5);
+        }
+
+        .time-label {
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 10px;
+            opacity: 0.8;
+        }
+
+        .progress-container {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            height: 40px; /* Increased height to accommodate text */
+            margin: 40px 0;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
+            position: relative; /* Needed for absolute positioning of text */
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #00c6ff, #0072ff);
+            width: 0%;
+            transition: width 0.5s ease;
+            position: relative;
+        }
+
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+            z-index: 2; /* Ensure text is above the progress bar */
+            pointer-events: none; /* Allow clicks to pass through */
+        }
+
+        .summary-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+            text-align: left;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .summary-title {
+            text-align: center;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #4fc3f7;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .summary-label {
+            font-weight: bold;
+            color: #bbdefb;
+        }
+
+        .summary-value {
+            color: #4fc3f7;
+            font-weight: bold;
+        }
+
+        .footer {
+            margin-top: 40px;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .date-container {
+                flex-direction: column;
+                align-items: center;
+                gap: 5px;
+            }
+            
+            .time-value {
+                font-size: 2.5rem;
+            }
+            
+            .time-unit {
+                min-width: 100px;
+                padding: 15px;
+            }
+            
+            .date-label, .date-value, .current-date-label, .current-date {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .countdown-container {
+                gap: 10px;
+            }
+            
+            .time-unit {
+                min-width: 70px;
+                padding: 10px;
+            }
+            
+            .time-value {
+                font-size: 1.8rem;
+            }
+            
+            .time-label {
+                font-size: 0.8rem;
+            }
+            
+            .summary-item {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Outta Here Countdown</h1>
+        
+        <div class="date-container">
+            <div class="date-item">
+                <div class="date-label">Target Date</div>
+                <div class="date-value">November 21st, 2025</div>
+            </div>
+            <div class="current-date-container">
+                <div class="current-date-label">Current Date</div>
+                <div class="current-date" id="current-date">Loading current date...</div>
+            </div>
+        </div>
+        
+        <div class="countdown-container">
+            <div class="time-unit">
+                <div class="time-value" id="days">00</div>
+                <div class="time-label">Days</div>
+            </div>
+            <div class="time-unit">
+                <div class="time-value" id="hours">00</div>
+                <div class="time-label">Hours</div>
+            </div>
+            <div class="time-unit">
+                <div class="time-value" id="minutes">00</div>
+                <div class="time-label">Minutes</div>
+            </div>
+            <div class="time-unit">
+                <div class="time-value" id="seconds">00</div>
+                <div class="time-label">Seconds</div>
+            </div>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+            <div class="progress-text" id="progress-text">0%</div>
+        </div>
+        
+        <div class="summary-container">
+            <h2 class="summary-title">Countdown Summary</h2>
+            <div class="summary-item">
+                <span class="summary-label">Countdown Started:</span>
+                <span class="summary-value" id="start-date">Loading...</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Weeks:</span>
+                <span class="summary-value" id="weeks">00</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Days:</span>
+                <span class="summary-value" id="total-days">00</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Hours:</span>
+                <span class="summary-value" id="total-hours">00</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Minutes:</span>
+                <span class="summary-value" id="total-minutes">00</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Seconds:</span>
+                <span class="summary-value" id="total-seconds">00</span>
+            </div>
+        </div>
+        
+        <p class="footer">Countdown updates in real-time</p>
+    </div>
+
+    <script>
+        // Set the target date to November 21st, 2025
+        const targetDate = new Date('November 21, 2025 00:00:00').getTime();
+
+        // Get or set the start date from/to cookie
+        function getStartDate() {
+            // Try to get the start date from the cookie
+            const cookieValue = document.cookie
+                .split('; ')
+                .find(row => row.startsWith('startDate='));
+            
+            if (cookieValue) {
+                // If cookie exists, get the date value
+                const savedDate = cookieValue.split('=')[1];
+                return parseInt(savedDate, 10);
+            } else {
+                // If cookie doesn't exist, set it to current time
+                const now = new Date().getTime();
+                document.cookie = `startDate=${now}; expires=Fri, 21 Nov 2025 00:00:00 GMT; path=/`;
+                return now;
+            }
+        }
+
+        const startDate = getStartDate();
+        const totalDuration = targetDate - startDate;
+
+        // Function to update current date display
+        function updateCurrentDate() {
+            const now = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            document.getElementById('current-date').innerHTML = now.toLocaleDateString('en-US', options);
+        }
+
+        // Update current date immediately and then every second
+        updateCurrentDate();
+        setInterval(updateCurrentDate, 1000);
+
+        // Function to format date for display
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+            return date.toLocaleDateString('en-US', options);
+        }
+
+        // Update the start date display
+        document.getElementById('start-date').innerHTML = formatDate(startDate);
+
+        // Update the countdown every second
+        const countdown = setInterval(function() {
+            // Get current date and time
+            const now = new Date().getTime();
+            
+            // Calculate the difference between target date and current date
+            const difference = targetDate - now;
+            
+            // If the countdown is finished
+            if (difference <= 0) {
+                clearInterval(countdown);
+                document.getElementById('days').innerHTML = '00';
+                document.getElementById('hours').innerHTML = '00';
+                document.getElementById('minutes').innerHTML = '00';
+                document.getElementById('seconds').innerHTML = '00';
+                document.getElementById('weeks').innerHTML = '00';
+                document.getElementById('total-days').innerHTML = '00';
+                document.getElementById('total-hours').innerHTML = '00';
+                document.getElementById('total-minutes').innerHTML = '00';
+                document.getElementById('total-seconds').innerHTML = '00';
+                document.getElementById('start-date').innerHTML = formatDate(startDate);
+                document.querySelector('.subtitle').innerHTML = 'It\'s November 21st, 2025!';
+                document.getElementById('progress-bar').style.width = '100%';
+                document.getElementById('progress-text').innerHTML = '100%';
+                return;
+            }
+            
+            // Calculate days, hours, minutes, and seconds
+            const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+            
+            // Calculate total time units
+            const totalSeconds = Math.floor(difference / 1000);
+            const totalMinutes = Math.floor(difference / (1000 * 60));
+            const totalHours = Math.floor(difference / (1000 * 60 * 60));
+            const totalDays = Math.floor(difference / (1000 * 60 * 60 * 24));
+            const weeks = Math.floor(totalDays / 7);
+            
+            // Display the results
+            document.getElementById('days').innerHTML = days.toString().padStart(2, '0');
+            document.getElementById('hours').innerHTML = hours.toString().padStart(2, '0');
+            document.getElementById('minutes').innerHTML = minutes.toString().padStart(2, '0');
+            document.getElementById('seconds').innerHTML = seconds.toString().padStart(2, '0');
+            
+            // Display summary data
+            document.getElementById('weeks').innerHTML = weeks.toString().padStart(2, '0');
+            document.getElementById('total-days').innerHTML = totalDays.toString().padStart(2, '0');
+            document.getElementById('total-hours').innerHTML = totalHours.toString().padStart(2, '0');
+            document.getElementById('total-minutes').innerHTML = totalMinutes.toString().padStart(2, '0');
+            document.getElementById('total-seconds').innerHTML = totalSeconds.toString().padStart(2, '0');
+            
+            // Calculate and update progress bar based on saved start date
+            const elapsed = now - startDate;
+            const progressPercentage = Math.min(100, Math.max(0, (elapsed / totalDuration) * 100));
+            document.getElementById('progress-bar').style.width = `${progressPercentage}%`;
+            document.getElementById('progress-text').innerHTML = `${Math.round(progressPercentage)}%`;
+        }, 1000);
+    </script>
+</body>
+</html>
